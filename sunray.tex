@@ -1,0 +1,272 @@
+\documentclass{article}
+
+\input{handout_preamble}
+
+
+% ***************************************************
+% HEADER INFORMATION
+
+\title{Introduction to Sunray}
+\author{The Local Computer Cluster}
+\date{}
+
+% ***************************************************
+
+\begin{document}
+
+
+% ***************************************************
+% BEGIN DOCUMENT
+% ***************************************************
+
+\maketitle
+
+\begin{center}
+    \includegraphics[width=0.5\textwidth]{sun}
+\end{center}
+
+\tableofcontents
+
+
+\newpage
+
+
+\section{Introduction}
+
+This small guide will help you access the computational resources that is available to you.
+If you are new to running calculations on a cluster system, {\bf read this document throughly}. Especially section "basic workflow".\\
+
+WARNING: If you run a job, and allocate more resources than the program is using, that job will be deleted {\bf without warning}, as this is huge waste of time and resources.\\
+
+
+\newpage
+\section{The Queue System}
+
+\subsection*{The Queues}
+
+There are number of nodes (computers) available to you, and the way we use them are submitting "jobs"/"calculations" to the queue system.
+%
+Using this queue system, your jobs are added to a queue so everyone shares the available resources.
+The sunray cluster is running a job-manager called {\bf SLURM}.
+In SLURM a queue is called a partition.\\
+
+There are currently 3 partitions on sunray.
+
+\begin{itemize}
+    \item {\bf coms} Primary queue of about 60 nodes, usable by all. \newline
+        \code{Intel(R) Xeon(R) 8x CPU X5550 @ 2.67GHz. 48GB RAM}
+
+    \item {\bf sauer} Queue for Stephan Sauer. Consists of 2 Nodes. \newline
+        \code{Intel(R) Xeon(R) 12x CPU E5-2640 0 @ 2.50GHz. 126GB RAM}
+
+    \item {\bf thinclients} The workstation in C317, mostly for single core calculations for comchem students.
+
+\end{itemize}
+
+\subsection*{The Queue system}
+
+The following SLURM commands will provide you with useful information. Use them.
+
+\begin{lstlisting}
+sinfo             # Overview of all the partitions
+squeue            # Overview of all queues
+squeue -p <part>  # Overview of jobs on specific partition
+squeue -u <user>  # queue for a specific user
+scancel <id>      # cancel the job
+\end{lstlisting}
+
+Submission scripts for different programs can be found in \code{/opt/bin/submit/} for the different programs.\\
+
+It is very important, if you have jobs running a long time to check it and see that it is behaving like it should. Otherwise it is a waste of computational resources.
+Especially make sure that the resources the job will use (from the programs input file) is the same as allocated by the queue system (from the submit script).\\
+
+
+
+\newpage
+
+
+\section{Essential Terminal Commands}
+
+You will without a doubt be using a commandline interface when working with sunray.
+If you are new to using Linux and a command shell here is a list of the essential commands you cannot live without.
+A good idea is also to get a copy of a commandline cheatsheet for linux.\\
+
+\begin{itemize}
+
+    \item \code{\bf cd} change directory. Change the directory by writing
+\begin{lstlisting}
+cd directory_name
+\end{lstlisting}
+
+        if you want to move up on directory the command is
+\begin{lstlisting}
+cd ..
+\end{lstlisting}
+
+    \item \code{\bf ls} list current directory. Prints out a list of all the items in the current folder.
+
+    \item \code{\bf grep} search for text in file/files. Prints out the search results. If for example you want to find all the optimization steps in a GAMESS output file the command is
+\begin{lstlisting}
+grep "NSERCH: " filename.log
+\end{lstlisting}
+        or if you have a set of GAMESS calculations running and you want to know which are done
+\begin{lstlisting}
+grep "exited:" *.log
+\end{lstlisting}
+
+    \item \code{\bf tail} prints out the last lines of a file. 
+        If you are running a calculation and you want to check how far the calculations has gone you can print out the last lines with
+\begin{lstlisting}
+tail filename.log
+\end{lstlisting}
+
+    \item \code{\bf less} read current file. If you want to read a log file, sometimes this is not possible by normal text editors because the log files are so big. For this you can use less and navigate the file via terminal.
+\begin{lstlisting}
+less filename.log
+\end{lstlisting}
+    you exit by pressing "q".
+
+    \item \code{\bf vim} if you want to edit files via the terminal you can use vim. 
+\begin{lstlisting}
+vi filename.inp
+\end{lstlisting}
+using vim like a boss, you'll need a lot of time, but the most important things to remember is to be in insert mode when you want to write (press "i"), and to exit you need to be in command-mode (press "esc" to exit insert mode) and write \code{:wq} + enter.
+
+\end{itemize}
+
+\newpage
+\section{Accessing Sunray}
+
+If you want to work from home the ssh address for sunray is
+
+\begin{lstlisting}
+sunray.theory.ki.ku.dk
+\end{lstlisting}
+
+% TODO putty information here
+
+% TODO putty X server
+
+% TODO mac X server
+
+% TODO sshfs information
+
+
+\newpage
+\section{Folder structure and available software}
+
+Some of the available software (most of the software needed for calculations, such as gaussview) is installed in the /opt/ folder. For advanced users; please add the /opt/bin/ folder to your \code{\$PATH}.\\
+
+\subsection*{List users}
+
+To get a list of all users on the sunray system write the following in the terminal;
+
+\begin{lstlisting}
+sunset_user_view
+\end{lstlisting}
+
+
+
+Depending on who your supervisor is (be it in the Computational Chemistry course or otherwise), you are going to carry out your calculations in different programs.
+The different programs requires different syntax and keywords in the input file.\\
+
+\subsection*{Avogadro}
+
+Avogadro is an open source software tool which can prepare input files for many of the programs you'll encounter and can also visualize the molecular structure of the molecule.
+You will find Avogadro under Application $\rightarrow$ Science.
+It is easy to draw molecules (and minimize while you draw using the AutoOpt tool) and to prepare input files using the built in editors.
+
+\subsection*{gaussview}
+
+You will use gaussview a lot during this course.
+It works similar to Avogadro but contains a lot more advanced tools and will only prepare input files for gaussian.
+To start gaussview open a terminal a write
+\begin{lstlisting}
+gaussview &
+\end{lstlisting}
+
+the "\&" character makes sure the terminal is not locked to the program, so you can use it for other things as well.
+
+
+\subsection*{Inputfile preparation}
+
+Avogadro and gaussview are great at drawing the molecules, but if you want to export a structure to another program, or if you have the structure in a XYZ format, you can easily convert it to a GAMESS input file by using {\bf OpenBabel}.
+
+\begin{lstlisting}
+babel -ixyz filename.xyz -ogamin filename.inp
+\end{lstlisting}
+
+to get the list for input and output formats write
+
+\begin{lstlisting}
+babel -L formats
+\end{lstlisting}
+
+Only for advanced users: If you are working with a lot of files that needs to be converted from XYZ to a specific input format, you can have a header file \code{gamess\_opt} and convert all XYZ-files in a a folder like this;
+
+\begin{lstlisting}
+for x in *.xyz; do babel -ixyz $x -ogamin ${x%.*}.inp -xf gamess_opt; done
+\end{lstlisting}
+
+\newpage
+\section{Basic Work Flow}
+
+\begin{center}
+\bf Basically; Think Before Submission
+\end{center}
+
+% TODO costs -> power / cooling
+% TODO CO2
+% TODO translate to points
+
+
+Here is a recommended work flow when working with computations in general.
+Follow this, and the number of recalculations you have to make is guaranteed lower than one who does not follow these recommendations.\\
+
+A very first important point is to realize what you want to do.
+You've probably been assigned a molecule so what properties are you interested in?
+Is it a basis set analysis?
+Do you need to see the effect of using correlation?
+Once you have that in place, you can start to think about in which order the calculations will be carried out.
+A general rule of thumb is that you work your way through one molecule in a serial manner, i.e. no more than one calculation at a time.\\
+
+Until you have a clear idea about what is going on from start all the way to finish, there is no point to have a lot of calculations running because there will be errors and you'll have to correct them.
+You don't need to start with the final molecule of interest.
+Make a small example system so the calculations will run faster and you can check the output and correct errors that may arise.
+Say you have 10 jobs, each taking 50 hours and all of them fail after 40 because you forgot a keyword.
+That is 400 hours (17 days!!) of wasted computer time, that others could have used.\\
+
+A second important point is that you need to be organized.
+Make folders, sub folders so you are always able to find your data files – it happens that you need to find it later on.
+Keep a log (be it a document on the computer or a logbook like in a real lab) to help you.\\
+
+Lastly, when you have all you calculations ready for computation, be considerate about other students.
+You might need to finish 10000 calculations, but do you need to process them all right now?
+The case is usually, that no matter how many calculations one have, it is always the collection of data/writing down stuff for the report which take the longest time to finish.
+Find a sweet spot between what you can process and you make the rest of the crowd pleased.\\
+
+
+\newpage
+\section{Steno}
+
+When to submit on which queue on steno
+
+\subsection*{Queues}
+
+\begin{itemize}
+
+    \item {\bf Kemi3} \code{Intel }
+        hello hello hello hello
+
+
+    \item 
+
+\end{itemize}
+
+
+
+% ***************************************************
+% END DOCUMENT
+% ***************************************************
+
+\end{document}
