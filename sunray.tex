@@ -34,9 +34,9 @@
 \section{Introduction}
 
 This small guide will help you access the computational resources that is available to you.
-If you are new to running calculations on a cluster system, {\bf read this document throughly}. Especially section "basic workflow".\\
+If you are new to running calculations on a cluster system, {\bf read this document thoroughly}. Especially the section named "Basic workflow".\\
 
-WARNING: If you run a job, and allocate more resources than the program is using, that job will be deleted {\bf without warning}, as this is huge waste of time and resources.\\
+WARNING: If you run a job, and allocate more/less resources than the program is using, that job will be deleted {\bf without warning}, as this is huge waste of time and resources.\\
 
 
 \newpage
@@ -44,22 +44,22 @@ WARNING: If you run a job, and allocate more resources than the program is using
 
 \subsection*{The Queues}
 
-There are number of nodes (computers) available to you, and the way we use them are submitting "jobs"/"calculations" to the queue system.
+There are number of nodes (computers) available to you, and the way we use them are by submitting "jobs"/"calculations" to the queue system.
 %
-Using this queue system, your jobs are added to a queue so everyone shares the available resources.
-The sunray cluster is running a job-manager called {\bf SLURM}.
+Using this queue system, your job will run when the resources requested are available.
+The Sunray cluster is running a job-manager called {\bf SLURM}.
 In SLURM a queue is called a partition.\\
 
 There are currently 3 partitions on sunray.
 
 \begin{itemize}
-    \item {\bf coms} Primary queue of about 60 nodes, usable by all. \newline
+    \item {\bf coms} Primary queue of about 35 nodes, usable by all. \newline
         \code{Intel(R) Xeon(R) 8x CPU X5550 @ 2.67GHz. 48GB RAM}
 
     \item {\bf sauer} Queue for Stephan Sauer. Consists of 2 Nodes. \newline
-        \code{Intel(R) Xeon(R) 12x CPU E5-2640 0 @ 2.50GHz. 126GB RAM}
+        \code{Intel(R) Xeon(R) 12x CPU E5-2640 0 @ 2.50GHz. 128GB RAM}
 
-    \item {\bf thinclients} The workstation in C317, mostly for single core calculations for comchem students.
+    \item {\bf thinclients} The workstation in C317, mostly for single core calculations for compchem students.
 
 \end{itemize}
 
@@ -71,13 +71,14 @@ The following SLURM commands will provide you with useful information. Use them.
 sinfo             # Overview of all the partitions
 squeue            # Overview of all queues
 squeue -p <part>  # Overview of jobs on specific partition
-squeue -u <user>  # queue for a specific user
-scancel <id>      # cancel the job
+squeue -u <user>  # Overview of all queues for a specific user
+scancel <id>      # Cancel job with jobid <id>
+sfree             # Detailed information on free resources and detects possible errors in submissions.
 \end{lstlisting}
 
-Submission scripts for different programs can be found in \code{/opt/bin/submit/} for the different programs.\\
+Template submission scripts for different programs can be found in \code{/opt/bin/submit/}.\\
 
-It is very important, if you have jobs running a long time to check it and see that it is behaving like it should. Otherwise it is a waste of computational resources.
+It is very important, if you have jobs running a long time to check the status of it regularly to see if it is behaving like it should. Otherwise it is a waste of computational resources.
 Especially make sure that the resources the job will use (from the programs input file) is the same as allocated by the queue system (from the submit script).\\
 
 
@@ -109,7 +110,7 @@ cd ..
 \begin{lstlisting}
 grep "NSERCH: " filename.log
 \end{lstlisting}
-        or if you have a set of GAMESS calculations running and you want to know which are done
+        or if you have a set of GAMESS calculations running and you want to know which are completed
 \begin{lstlisting}
 grep "exited:" *.log
 \end{lstlisting}
@@ -140,7 +141,7 @@ using vim like a boss, you'll need a lot of time, but the most important things 
 If you want to work from home the ssh address for sunray is
 
 \begin{lstlisting}
-sunray.theory.ki.ku.dk
+username@sunray.theory.ki.ku.dk
 \end{lstlisting}
 
 % TODO putty information here
@@ -182,8 +183,8 @@ It is easy to draw molecules (and minimize while you draw using the AutoOpt tool
 
 \subsection*{gaussview}
 
-You will use gaussview a lot during this course.
-It works similar to Avogadro but contains a lot more advanced tools and will only prepare input files for gaussian.
+If you're following Computational Chemistry, You will use gaussview a lot during the course.
+It works similar to Avogadro but contains some alternate tools and will only prepare input files for the gaussian program.
 To start gaussview open a terminal a write
 \begin{lstlisting}
 gaussview &
@@ -194,8 +195,9 @@ the "\&" character makes sure the terminal is not locked to the program, so you 
 
 \subsection*{Inputfile preparation}
 
-Avogadro and gaussview are great at drawing the molecules, but if you want to export a structure to another program, or if you have the structure in a XYZ format, you can easily convert it to a GAMESS input file by using {\bf OpenBabel}.
+Avogadro and gaussview are great at drawing the molecules, but if you want to export a structure to another program, or if you have the structure in a XYZ format, you can easily convert by using {\bf OpenBabel}.
 
+To convert a file in XYZ format to a GAMESS input file
 \begin{lstlisting}
 babel -ixyz filename.xyz -ogamin filename.inp
 \end{lstlisting}
@@ -206,7 +208,7 @@ to get the list for input and output formats write
 babel -L formats
 \end{lstlisting}
 
-Only for advanced users: If you are working with a lot of files that needs to be converted from XYZ to a specific input format, you can have a header file \code{gamess\_opt} and convert all XYZ-files in a a folder like this;
+If you are working with a lot of files that needs to be converted from XYZ to a specific input format, you can have a header file \code{gamess\_opt} and convert all XYZ-files in a folder like this;
 
 \begin{lstlisting}
 for x in *.xyz; do babel -ixyz $x -ogamin ${x%.*}.inp -xf gamess_opt; done
@@ -240,11 +242,22 @@ Make a small example system so the calculations will run faster and you can chec
 Say you have 10 jobs, each taking 50 hours and all of them fail after 40 because you forgot a keyword.
 That is 400 hours (17 days!!) of wasted computer time, that others could have used.\\
 
+If you run your jobs parallelized, then you have to be aware of how your computation time scales with the number of cpu's.
+It is a waste of resources to run a job on 8 cpu's if the benefit over running it on 4 is marginal.
+
+Make sure that you (ab)use symmetry in your calculations whenever it is possible.
+Your calculation time can scale up to the degrees of freedom squared, so make absolutely sure that you don't waste resources and check if small changes can be made to your structure to enforce symmetry.
+
+When doing parallelized calculations, always use 2, 4, 8 etc. cpu's unless having a good reason not to.
+Requesting 3 or 5 cpu's often leaves 1-2 cpu's unused on the node.
+
+Gaussian is in general made for DFT calculations, and you shouldn't use it for anything other than that, unless you have a good reason.
+
 A second important point is that you need to be organized.
 Make folders, sub folders so you are always able to find your data files – it happens that you need to find it later on.
 Keep a log (be it a document on the computer or a logbook like in a real lab) to help you.\\
 
-Lastly, when you have all you calculations ready for computation, be considerate about other students.
+Lastly, when you have all you calculations ready for computation, be considerate about others.
 You might need to finish 10000 calculations, but do you need to process them all right now?
 The case is usually, that no matter how many calculations one have, it is always the collection of data/writing down stuff for the report which take the longest time to finish.
 Find a sweet spot between what you can process and you make the rest of the crowd pleased.\\
@@ -253,17 +266,24 @@ Find a sweet spot between what you can process and you make the rest of the crow
 \newpage
 \section{Steno}
 
-When to submit on which queue on steno
+What the different steno partitions are good for.
 
-\subsection*{Queues}
+\subsection*{Partitions}
 
 \begin{itemize}
 
-    \item {\bf Kemi3} \code{Intel }
-        hello hello hello hello
+    \item {\bf kemi3} \code{Intel }
+        For large (24 cores) parallelized jobs.
+        kemi3 is at least a factor of 1.5 slower than the other partitions, but it has 24 cpu's per node, and is therefore well suited for calculations with near linear scaling.
 
 
-    \item 
+    \item {\bf kemi4} \code{Intel }
+        For mid-high memory jobs.
+        kemi4 has 96gb memory available for 12 cpu's.
+
+    \item {\bf chem} \code{Intel }
+        For mid-high memory jobs.
+        chem has 128gb memory available for 12 cpu's.
 
 \end{itemize}
 
