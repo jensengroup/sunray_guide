@@ -33,10 +33,11 @@
 
 \section{Introduction}
 
-This small guide will help you access the computational resources that is available to you.
-If you are new to running calculations on a cluster system, {\bf read this document thoroughly}. Especially the section named "Basic workflow".\\
+This small guide will help you access the computational resources that is available.
+If you are new to running calculations on a cluster system, {\bf read this document thoroughly}.
+Especially the section named "Basic workflow".\\
 
-WARNING: If you run a job, and allocate more/less resources than the program is using, that job will be deleted {\bf without warning}, as this is huge waste of time and resources.\\
+WARNING: If you run a job and allocate more/less resources than the program is using, then this job is wasting resources and time, and will therefor be {\bf deleted without warning}.
 
 
 \newpage
@@ -44,7 +45,7 @@ WARNING: If you run a job, and allocate more/less resources than the program is 
 
 \subsection*{The Queues}
 
-There are number of nodes (computers) available to you, and the way we use them are by submitting "jobs"/"calculations" to the queue system.
+There are number of nodes (computers) available, and the way we use them are by submitting "jobs"/"calculations" to the queue system.
 %
 Using this queue system, your job will run when the resources requested are available.
 The Sunray cluster is running a job-manager called {\bf SLURM}.
@@ -53,13 +54,13 @@ In SLURM a queue is called a partition.\\
 There are currently 3 partitions on sunray.
 
 \begin{itemize}
-    \item {\bf coms} Primary queue of about 35 nodes, usable by all. \newline
+    \item {\bf coms} Primary queue of about 60 nodes, usable by all COMS. \newline
         \code{Intel(R) Xeon(R) 8x CPU X5550 @ 2.67GHz. 48GB RAM}
 
     \item {\bf sauer} Queue for Stephan Sauer. Consists of 2 Nodes. \newline
         \code{Intel(R) Xeon(R) 12x CPU E5-2640 0 @ 2.50GHz. 128GB RAM}
 
-    \item {\bf thinclients} The workstation in C317, mostly for single core calculations for compchem students.
+    \item {\bf comchem} The workstation in C317, mostly for single core calculations for compchem students.
 
 \end{itemize}
 
@@ -76,9 +77,11 @@ scancel <id>      # Cancel job with jobid <id>
 sfree             # Detailed information on free resources and detects possible errors in submissions.
 \end{lstlisting}
 
-Template submission scripts for different programs can be found in \code{/opt/bin/submit/}.\\
+Template submission scripts for different programs can be found in \code{/opt/bin/submit/}.
+Copy-paste those you need to your own \code{bin} folder.\\
 
-It is very important, if you have jobs running a long time to check the status of it regularly to see if it is behaving like it should. Otherwise it is a waste of computational resources.
+It is very important, if you have jobs running a long time to check the status of it regularly to see if it is behaving like it should.
+Otherwise it is a waste of computational resources.
 Especially make sure that the resources the job will use (from the programs input file) is the same as allocated by the queue system (from the submit script).\\
 
 
@@ -141,26 +144,45 @@ using vim like a boss, you'll need a lot of time, but the most important things 
 If you want to work from home the ssh address for sunray is
 
 \begin{lstlisting}
-username@sunray.theory.ki.ku.dk
+ssh username@sunray.theory.ki.ku.dk
 \end{lstlisting}
 
-% TODO putty information here
+If you want to be able to open windows (such as gaussview) from home, you can set the flags
 
-% TODO putty X server
+\begin{lstlisting}
+ssh -XC username@sunray.theory.ki.ku.dk
+\end{lstlisting}
 
-\subsection{Installing X Server on OS X}
-To use the X Server on a Mac with OS X 10.8 or newer, you need to install \emph{XQuartz}. You
-can download it at \url{http://xquartz.macosforge.org/}. At the time of
-writing (July, 2015) the current version is XQuartz-2.7.7. Download and install that. Finally
-you need to restart your computer for the changes to take effect. 
+to start a X server and forward the visual from sunray.
 
 % TODO sshfs information
+
+
+
+\subsection{Access from Windows}
+
+To access sunray from a windows machine you need to download the program PuTTY.\\
+
+To access the X server on linux you need to install a X-server on windows.\\
+
+This section needs to be updated by Anders...
+
+
+\subsection{Access from OS X}
+
+To use the X Server on a Mac with OS X 10.8 or newer, you need to install \emph{XQuartz}.
+You can download it at \url{http://xquartz.macosforge.org/}.
+At the time of writing (July, 2015) the current version is XQuartz-2.7.7.
+Download and install that.
+Finally you need to restart your computer for the changes to take effect.
+
 
 
 \newpage
 \section{Folder structure and available software}
 
-Some of the available software (most of the software needed for calculations, such as gaussview) is installed in the /opt/ folder. For advanced users; please add the /opt/bin/ folder to your \code{\$PATH}.\\
+Some of the available software (most of the software needed for calculations, such as gaussview) is installed in the /opt/ folder.
+For advanced users; please add the /opt/bin/ folder to your \code{\$PATH}.\\
 
 \subsection*{List users}
 
@@ -169,7 +191,6 @@ To get a list of all users on the sunray system write the following in the termi
 \begin{lstlisting}
 sunset_user_view
 \end{lstlisting}
-
 
 
 Depending on who your supervisor is (be it in the Computational Chemistry course or otherwise), you are going to carry out your calculations in different programs.
@@ -183,8 +204,8 @@ It is easy to draw molecules (and minimize while you draw using the AutoOpt tool
 
 \subsection*{gaussview}
 
-If you're following Computational Chemistry, You will use gaussview a lot during the course.
-It works similar to Avogadro but contains some alternate tools and will only prepare input files for the gaussian program.
+If you're following Computational Chemistry, you will use gaussview a lot during the course.
+It works similar to Avogadro but contains some alternate tools and will only prepare input files for the Gaussian program.
 To start gaussview open a terminal a write
 \begin{lstlisting}
 gaussview &
@@ -230,9 +251,10 @@ Here is a recommended work flow when working with computations in general.
 Follow this, and the number of recalculations you have to make is guaranteed lower than one who does not follow these recommendations.\\
 
 A very first important point is to realize what you want to do.
-You've probably been assigned a molecule so what properties are you interested in?
-Is it a basis set analysis?
-Do you need to see the effect of using correlation?
+You've probably been assigned a molecule, so what properties are you interested in?
+Is it a basisset analysis?
+Do you need to see the effect of using correlation?\\
+
 Once you have that in place, you can start to think about in which order the calculations will be carried out.
 A general rule of thumb is that you work your way through one molecule in a serial manner, i.e. no more than one calculation at a time.\\
 
@@ -243,15 +265,17 @@ Say you have 10 jobs, each taking 50 hours and all of them fail after 40 because
 That is 400 hours (17 days!!) of wasted computer time, that others could have used.\\
 
 If you run your jobs parallelized, then you have to be aware of how your computation time scales with the number of cpu's.
-It is a waste of resources to run a job on 8 cpu's if the benefit over running it on 4 is marginal.
+It is a waste of resources to run a job on 8 cpu's if the benefit over running it on 4 is marginal.\\
 
-Make sure that you (ab)use symmetry in your calculations whenever it is possible.
-Your calculation time can scale up to the degrees of freedom squared, so make absolutely sure that you don't waste resources and check if small changes can be made to your structure to enforce symmetry.
+When optimizing your structures it is generally a good idea to use a fast method (like PM6) to get a crude optimized structure, before trying to optimize it with a more computational heavy method.\\
+
+Make sure that you use symmetry in your calculations whenever it is possible!
+Your calculation time can scale up to the degrees of freedom squared, so make absolutely sure that you don't waste resources and check if small changes can be made to your structure to enforce symmetry.\\
 
 When doing parallelized calculations, always use 2, 4, 8 etc. cpu's unless having a good reason not to.
-Requesting 3 or 5 cpu's often leaves 1-2 cpu's unused on the node.
+Requesting 3 or 5 cpu's often leaves 1-2 cpu's unused on the node.\\
 
-Gaussian is in general made for DFT calculations, and you shouldn't use it for anything other than that, unless you have a good reason.
+% Gaussian is in general made for DFT calculations, and you shouldn't use it for anything other than that, unless you have a good reason.
 
 A second important point is that you need to be organized.
 Make folders, sub folders so you are always able to find your data files – it happens that you need to find it later on.
@@ -266,7 +290,7 @@ Find a sweet spot between what you can process and you make the rest of the crow
 \newpage
 \section{Steno}
 
-What the different steno partitions are good for.
+Small section on the steno partitions  and what the different partitions are good for.
 
 \subsection*{Partitions}
 
@@ -275,7 +299,7 @@ What the different steno partitions are good for.
     \item {\bf kemi3} \code{Intel }
         For large (24 cores) parallelized jobs.
         kemi3 is at least a factor of 1.5 slower than the other partitions, but it has 24 cpu's per node, and is therefore well suited for calculations with near linear scaling.
-
+        This is NOT a good partition to run single-core DFT calculations on.
 
     \item {\bf kemi4} \code{Intel }
         For mid-high memory jobs.
