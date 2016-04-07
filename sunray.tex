@@ -37,7 +37,7 @@ This small guide will help you access the computational resources that is availa
 If you are new to running calculations on a cluster system, {\bf read this document thoroughly}.
 Especially the section named "Basic workflow".\\
 
-WARNING: If you run a job and allocate more/less resources than the program is using, then this job is wasting resources and time, and will therefor be {\bf deleted without warning}.
+WARNING: If you run a job and allocate more/less resources than the program is using, then this job is wasting resources and time, and will for that reason be {\bf deleted without warning}.
 
 
 \newpage
@@ -275,8 +275,6 @@ Your calculation time can scale up to the degrees of freedom squared, so make ab
 When doing parallelized calculations, always use 2, 4, 8 etc. cpu's unless having a good reason not to.
 Requesting 3 or 5 cpu's often leaves 1-2 cpu's unused on the node.\\
 
-% Gaussian is in general made for DFT calculations, and you shouldn't use it for anything other than that, unless you have a good reason.
-
 A second important point is that you need to be organized.
 Make folders, sub folders so you are always able to find your data files – it happens that you need to find it later on.
 Keep a log (be it a document on the computer or a logbook like in a real lab) to help you.\\
@@ -299,15 +297,17 @@ Small section on the steno partitions  and what the different partitions are goo
     \item {\bf kemi3} \code{Intel }
         For large (24 cores) parallelized jobs.
         kemi3 is at least a factor of 1.5 slower than the other partitions, but it has 24 cpu's per node, and is therefore well suited for calculations with near linear scaling.
-        This is NOT a good partition to run single-core DFT calculations on.
+        This is not a good partition to run single-core DFT calculations on.
 
     \item {\bf kemi4} \code{Intel }
         For mid-high memory jobs.
-        kemi4 has 96gb memory available for 12 cpu's.
+        kemi4 has 96gb memory available for 12 cpu's and 2.8 TB harddrive.
+        For this reason the node should primarilly be used if a lot of storage is required
+        during the job (large mp2/ccsd/cholesky decomposition)
 
     \item {\bf chem} \code{Intel }
         For mid-high memory jobs.
-        chem has 128gb memory available for 12 cpu's.
+        chem has 128gb memory available for 12 cpu's and 1.6 TB harddrive.
 
 \end{itemize}
 
