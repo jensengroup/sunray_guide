@@ -33,7 +33,7 @@
 
 \section{Introduction}
 
-This small guide will help you access the computational resources that is available.
+This small guide will help you access the computational resources that are available.
 If you are new to running calculations on a cluster system, {\bf read this document thoroughly}.
 Especially the section named "Basic workflow".\\
 
@@ -45,7 +45,7 @@ WARNING: If you run a job and allocate more/less resources than the program is u
 
 \subsection*{The Queues}
 
-There are number of nodes (computers) available, and the way we use them are by submitting "jobs"/"calculations" to the queue system.
+There are a number of nodes (computers) available, and the way we use them is by submitting "jobs"/"calculations" to the queue system.
 %
 Using this queue system, your job will run when the resources requested are available.
 The Sunray cluster is running a job-manager called {\bf SLURM}.
@@ -77,14 +77,57 @@ scancel <id>      # Cancel job with jobid <id>
 sfree             # Detailed information on free resources and detects possible errors in submissions.
 \end{lstlisting}
 
-Template submission scripts for different programs can be found in \code{/opt/bin/submit/}.
-Copy-paste those you need to your own \code{bin} folder.\\
 
 It is very important, if you have jobs running a long time to check the status of it regularly to see if it is behaving like it should.
 Otherwise it is a waste of computational resources.
-Especially make sure that the resources the job will use (from the programs input file) is the same as allocated by the queue system (from the submit script).\\
+Especially make sure that the resources the job will use (from the programs input file) is the same as allocated by the queue system (from the submit script). Read carefully next section.\\
 
+\subsection*{Submission scripts}
 
+Template submission scripts for different programs can be found in \code{/opt/bin/submit/}. These templates cannot be modfied by the users!
+Copy-paste those you need to your own \code{bin} folder. For example, a user whose username is \code{brian} has his bin directory in \code{/home/brian/bin}.\\
+
+The pre-made scripts are:
+
+\begin{itemize}
+\item{submit\_dalton}
+\item{submit\_gamess}
+\item{submit\_gaussian}
+\item{submit\_mopac}
+\item{submit\_orca}
+\end{itemize}
+
+Let's familiarize with them. The first lines of every submission script are as follow:
+
+\begin{verbatim}
+
+#!/bin/bash
+
+JOB=${1%.*}
+
+SUBMIT=qsub.tmp
+
+PWD=`pwd`
+
+PARTITION=comchem # sauer or coms or comchem
+TIME=10:00:00
+
+NCPUS=1
+MEM=1gb
+
+\end{verbatim}
+
+The first thing that one may want to change is the \code{PARTITION}, that is which queue to use, as previously described.
+Secondly, the time allocated for the job to run. In the reported example, this job would have a maximum of 10 hours to run, not one second more.
+If you think/know that your job will require more time, you should change the variable \code{TIME} accordingly.
+
+Thirdly, the number of cpus which will be allocated to the job. Do not get hungry and selfish, try to be considerate of the other users.
+However, parallel jobs (that is those running on more than 1 cpu) are usually faster than single cpu jobs, thus freeing resources earlier. You need to
+check that your submission script and your input file specify the same numebr of cpus. For example, to launch Gaussian with 2 cpus, one has to add
+\code{\%nprocshare=2} at the beginning of the input file, and use \code{NCPUS=2} in their own gaussian submission script.
+
+Finally, the amount of memory is indicated by the variable \code{MEM}. Again, you should align your input and submission files.
+For example, in Gaussian the default allocated memory is 256 MB. To specify, e.g., 1 GB in the input file, you should use \code{\%mem=1GB}.
 
 \newpage
 
@@ -97,7 +140,7 @@ A good idea is also to get a copy of a commandline cheatsheet for linux.\\
 
 \begin{itemize}
 
-    \item \code{\bf cd} change directory. Change the directory by writing
+    \item \code{\bf cd} changes directory. Change the directory by writing
 \begin{lstlisting}
 cd directory_name
 \end{lstlisting}
@@ -107,7 +150,18 @@ cd directory_name
 cd ..
 \end{lstlisting}
 
-    \item \code{\bf ls} list current directory. Prints out a list of all the items in the current folder.
+    \item \code{\bf ls} lists current directory. Prints out a list of all the items in the current folder.
+    
+    \item \code{\bf pwd} shows the current directory
+    
+    \item \code{\bf cp} copies a file. To copy file1 to file2 use
+\begin{lstlisting}
+cp file1 file2
+\end{lstlisting}
+Either files can be specified with their full path:
+\begin{lstlisting}
+cp /home/username/directory_name1/file1 /home/username/directory_name2/file2
+\end{lstlisting}
 
     \item \code{\bf grep} search for text in file/files. Prints out the search results. If for example you want to find all the optimization steps in a GAMESS output file the command is
 \begin{lstlisting}
@@ -161,21 +215,25 @@ to start a X server and forward the visual from sunray.
 
 \subsection{Access from Windows}
 
-To access sunray from a windows machine you need to download the program PuTTY.\\
+To access sunray from a windows machine you need to download the program PuTTY. It can be found at \url{http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html}.\\
 
-To access the X server on linux you need to install a X-server on windows.\\
-
-This section needs to be updated by Anders...
+To access the X server you need to install a X-server on windows.
+A possible option is the program Xming, which can be downloaded from \url{http://www.straightrunning.com/XmingNotes/}. The 'Public Domain Releases' are for free.
+Moreover, Xming is quite well integrated with PuTTY. Follow the instractions on the web page.
 
 
 \subsection{Access from OS X}
 
 To use the X Server on a Mac with OS X 10.8 or newer, you need to install \emph{XQuartz}.
 You can download it at \url{http://xquartz.macosforge.org/}.
-At the time of writing (July, 2015) the current version is XQuartz-2.7.7.
+At the time of writing (August, 2016) the current version is XQuartz-2.7.9.
 Download and install that.
 Finally you need to restart your computer for the changes to take effect.
-
+However, you may still experience problems with visualizing remote graphical programs.
+You will need to follow the instructions in \url{https://bugs.freedesktop.org/show_bug.cgi?id=96260/}.
+In practice, one has to modify the startx file using \code{sudo vi /usr/X11R6/bin/startx}.
+Add some code around lines 80 and 107, as described in the attachement patch\_file\_for\_startx from the same web page (the lines starting with a plus sign +).
+Finally, you have to give the following command \code{defaults write org.macosforge.xquartz.X11 enable\_iglx -bool true} in your terminal.
 
 
 \newpage
@@ -311,6 +369,15 @@ Small section on the steno partitions  and what the different partitions are goo
 
 \end{itemize}
 
+\section{Cheat sheets}
+
+\begin{center}
+    \includegraphics[width=0.95\textwidth]{command-line-cheat-sheet}
+\end{center}
+
+\begin{center}
+    \includegraphics[width=0.95\textwidth]{vim-cheat-sheet}
+\end{center}
 
 
 % ***************************************************
